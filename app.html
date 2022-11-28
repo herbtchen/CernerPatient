@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+	<script src='dist/fhir-client-v2.js'></script>
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+  <style>
+    p{background:lightgray; margin:1em; padding:1em;}
+  </style>
+</head>
+
+<body>
+
+  <div id="main">
+    <p v-for="item in $data.entry" v-html="item.resource.text.div">
+    </p>
+  </div>
+
+	<script>
+
+		var myApp = {}
+
+    FHIR.oauth2.ready()
+    .then(function(client){ 
+      myApp.smart = client
+      doRequests()
+    })
+
+    async function doRequests(){
+
+      var obs = await fetch(myApp.smart.state.serverUrl+"/Condition?patient="+myApp.smart.patient.id+"&clinicalstatus=active",{
+        headers:{  
+          "Accept":"application/json+fhir",
+          "Authorization":"Bearer "+myApp.smart.state.tokenResponse.access_token
+        }
+        }).then(function(data){
+          return data
+      })
+
+      var loincs = [ encodeURIComponent("http://loinc.org|4544-3"),encodeURIComponent("http://loinc.org|444-1") ] //4544-3 = hematocrit
+      var obs = await fetch(myApp.smart.state.serverUrl+"/Observation?patient="+myApp.smart.patient.id+"&limit=50&code="+loincs.join(","),{
+        headers:{  
+          "Accept":"application/json+fhir",
+          "Authorization":"Bearer "+myApp.smart.state.tokenResponse.access_token
+        }
+        }).then(function(data){
+          return data
+      })
+
+      var response = await obs.json()
+      console.log(response)
+      myApp.vue = new Vue({
+        el:"#main",
+        data: response
+      })
+
+    }
+	</script>
+
+</body>
+
+</html>
