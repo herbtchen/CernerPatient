@@ -31,8 +31,7 @@
     })
 
     async function doRequests(){
-
-      var obs = await fetch(myApp.smart.state.serverUrl+"/Condition?patient="+myApp.smart.patient.id+"&clinicalstatus=active",{
+      var obs = await fetch(myApp.smart.state.serverUrl+"/Observation?patient="+myApp.smart.patient.id,{
         headers:{  
           "Accept":"application/json+fhir",
           "Authorization":"Bearer "+myApp.smart.state.tokenResponse.access_token
@@ -40,17 +39,6 @@
         }).then(function(data){
           return data
       })
-
-      var loincs = [ encodeURIComponent("http://loinc.org|4544-3"),encodeURIComponent("http://loinc.org|444-1") ] //4544-3 = hematocrit
-      var obs = await fetch(myApp.smart.state.serverUrl+"/Observation?patient="+myApp.smart.patient.id+"&limit=50&code="+loincs.join(","),{
-        headers:{  
-          "Accept":"application/json+fhir",
-          "Authorization":"Bearer "+myApp.smart.state.tokenResponse.access_token
-        }
-        }).then(function(data){
-          return data
-      })
-
       var response = await obs.json()
       console.log(response)
       myApp.vue = new Vue({
