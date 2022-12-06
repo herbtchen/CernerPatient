@@ -18,31 +18,32 @@
 	<h2>Patient-SMART-App</h2>  
     	<p v-for="item in $data.entry" v-html="item.resource.text.div">
     	</p>
-  	</div>
+  </div>
 
 	<script>
 		var myApp = {}
     		FHIR.oauth2.ready()
     		.then(function(client){ 
-      		myApp.smart = client
-      		doRequests()
+      			myApp.smart = client
+      			doRequests()
     		})
 
     		async function doRequests(){
-      		var obs = await fetch(myApp.smart.state.serverUrl+"/Observation?patient="+myApp.smart.patient.id,{
-        	headers:{  
-          		"Accept":"application/json+fhir",
-          		"Authorization":"Bearer "+myApp.smart.state.tokenResponse.access_token
+      			var obs = await fetch(myApp.smart.state.serverUrl+"/Observation?patient="+myApp.smart.patient.id,{
+        		headers:{  
+          			"Accept":"application/json+fhir",
+          			"Authorization":"Bearer "+myApp.smart.state.tokenResponse.access_token
         		}
-        	}).then(function(data){
-          		return data
-      		})
-      		var response = await obs.json()
-      		console.log(response)
-      		myApp.vue = new Vue({
-        	el:"#main",
-        	data: response
-      		})
+        		}).then(function(data){
+          			return data
+      			})
+			
+      			var response = await obs.json()
+      			console.log(response)
+      			myApp.vue = new Vue({
+        		el:"#main",
+        		data: response
+      			})
 
     		}
 	</script>
